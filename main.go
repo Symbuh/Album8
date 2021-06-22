@@ -23,14 +23,58 @@ type Author struct {
 	LastName  string `json:"lastname"`
 }
 
+type Tag struct {
+	ID   string `json:"ID"`
+	Name string `json:"name"`
+}
+
+type Image struct {
+	ID          string `json:"ID"`
+	URL         string `json:"url"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Tags        []Tag
+	// I think it may make more sense to store tags as an object with the key being
+	// the ID, worry about this later.
+}
+
 // Init books variable as a slice Book struct
 // You need to define the length of arrays in go but slice has variable length
 
 // Declaring the collection of books as a slice
 var books []Book
+var images []Image
 
 func uploadImage(w http.ResponseWriter, r *http.Request) {
-	w.Header().set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
+	var image Image
+	_ = json.NewDecoder(r.Body).Decode(&image)
+	image.ID = strconv.Itoa(rand.Intn(100000)) // Mock ID - not safe (could generate same ID)
+	images = append(images, image)
+
+	json.NewEncoder(w).Encode(image)
+}
+
+func getImages(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(images)
+}
+
+func getImagesByTag(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+
+	/*
+		What would be the best way to store the tag?
+
+		I think that moving on to the DB code would be a good idea here, as we would be
+		simply pulling these items out of postgres. We wouldn't really need to
+	*/
+	for _, item := range images {
+		if item. == params["tag"] {
+
+		}
+	}
 }
 
 // Get all books
