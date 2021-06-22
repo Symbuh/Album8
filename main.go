@@ -24,12 +24,10 @@ type Author struct {
 }
 
 type Tag struct {
-	ID   string `json:"ID"`
 	Name string `json:"name"`
 }
 
 type Image struct {
-	ID          string `json:"ID"`
 	URL         string `json:"url"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -45,37 +43,34 @@ type Image struct {
 var books []Book
 var images []Image
 
-func uploadImage(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var image Image
-	_ = json.NewDecoder(r.Body).Decode(&image)
-	image.ID = strconv.Itoa(rand.Intn(100000)) // Mock ID - not safe (could generate same ID)
-	images = append(images, image)
+// func uploadImage(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
+// 	var image Image
+// 	_ = json.NewDecoder(r.Body).Decode(&image)
+// 	image.ID = strconv.Itoa(rand.Intn(100000)) // Mock ID - not safe (could generate same ID)
+// 	images = append(images, image)
 
-	json.NewEncoder(w).Encode(image)
-}
+// 	json.NewEncoder(w).Encode(image)
+// }
 
-func getImages(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(images)
-}
+// func getImages(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode(images)
+// }
 
-func getImagesByTag(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(r)
+// func getImage(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode(images)
+// }
 
-	/*
-		What would be the best way to store the tag?
+// func deleteImage(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode(images)
+// }
 
-		I think that moving on to the DB code would be a good idea here, as we would be
-		simply pulling these items out of postgres. We wouldn't really need to
-	*/
-	for _, item := range images {
-		if item. == params["tag"] {
-
-		}
-	}
-}
+// func getImagesByTag(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
+// 	params := mux.Vars(r)
 
 // Get all books
 func getBooks(w http.ResponseWriter, r *http.Request) {
