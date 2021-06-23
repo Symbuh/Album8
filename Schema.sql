@@ -1,8 +1,8 @@
-DROP DATABASE IF EXISTS qanda;
+DROP DATABASE IF EXISTS foundantImages;
 
-CREATE DATABASE qanda;
+CREATE DATABASE foundantImages;
 
-\c qanda;
+\c foundantImages;
 
 
 CREATE TABLE images (
@@ -20,13 +20,9 @@ CREATE TABLE tags (
 
 CREATE TABLE images_tags (
   image_id int REFERENCES images(image_id) ON UPDATE CASCADE ON DELETE CASCADE,
-  tag_id int REFRENCES tags(tag_id) ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT images_tags_pkey PRIMARY KEY (images_id, tags_id)
+  tag_id int REFERENCES tags(tag_id) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT images_tags_pkey PRIMARY KEY (image_id, tag_id)
 )
 
--- COPY questions FROM '/home/n/Desktop/questions.csv' DELIMITER ',' CSV HEADER;
--- COPY answers FROM '/home/n/Desktop/answers.csv' DELIMITER ',' CSV HEADER;
--- COPY answerphotos FROM '/home/n/Desktop/answers_photos.csv' DELIMITER ',' CSV HEADER;
-
 Create index image_id_idx on images_tags (image_id);
-create index tag_id_idx on imags_tags (tag_id);
+create index tag_id_idx on images_tags (tag_id);
