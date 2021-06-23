@@ -16,15 +16,16 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"foundant-technologies-challenge/models"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
 
+	"github.com/Symbuh/foundant-technologies-challenge/models"
+
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv" // package used to read the .env file
-	_ "github.com/lib/pq"      // postgres golang driver
+	// postgres golang driver
 )
 
 // response format
@@ -71,22 +72,22 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	// create an empty user of type models.User
-	var user models.User
+	var image models.Image
 
 	// decode the json request to user
-	err := json.NewDecoder(r.Body).Decode(&user)
+	err := json.NewDecoder(r.Body).Decode(&image)
 
 	if err != nil {
 		log.Fatalf("Unable to decode the request body.  %v", err)
 	}
 
 	// call insert user function and pass the user
-	insertID := insertUser(user)
+	insertID := insertImage(image)
 
 	// format a response object
 	res := response{
 		ID:      insertID,
-		Message: "User created successfully",
+		Message: "Image saved successfully",
 	}
 
 	// send the response
@@ -94,7 +95,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetUser will return a single user by its id
-func GetUser(w http.ResponseWriter, r *http.Request) {
+func GetImage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	// get the userid from the request params, key is "id"
@@ -108,77 +109,77 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// call the getUser function with user id to retrieve a single user
-	user, err := getUser(int64(id))
+	image, err := getImage(int64(id))
 
 	if err != nil {
-		log.Fatalf("Unable to get user. %v", err)
+		log.Fatalf("Unable to get image. %v", err)
 	}
 
 	// send the response
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(image)
 }
 
 // GetAllUser will return all the users
-func GetAllUser(w http.ResponseWriter, r *http.Request) {
+func GetAllImages(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	// get all the users in the db
-	users, err := getAllUsers()
+	images, err := getAllImages()
 
 	if err != nil {
 		log.Fatalf("Unable to get all user. %v", err)
 	}
 
 	// send all the users as response
-	json.NewEncoder(w).Encode(users)
+	json.NewEncoder(w).Encode(images)
 }
 
 // UpdateUser update user's detail in the postgres db
-func UpdateUser(w http.ResponseWriter, r *http.Request) {
+// func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "PUT")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+// 	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+// 	w.Header().Set("Access-Control-Allow-Origin", "*")
+// 	w.Header().Set("Access-Control-Allow-Methods", "PUT")
+// 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	// get the userid from the request params, key is "id"
-	params := mux.Vars(r)
+// 	// get the userid from the request params, key is "id"
+// 	params := mux.Vars(r)
 
-	// convert the id type from string to int
-	id, err := strconv.Atoi(params["id"])
+// 	// convert the id type from string to int
+// 	id, err := strconv.Atoi(params["id"])
 
-	if err != nil {
-		log.Fatalf("Unable to convert the string into int.  %v", err)
-	}
+// 	if err != nil {
+// 		log.Fatalf("Unable to convert the string into int.  %v", err)
+// 	}
 
-	// create an empty user of type models.User
-	var user models.User
+// 	// create an empty user of type models.User
+// 	var user models.User
 
-	// decode the json request to user
-	err = json.NewDecoder(r.Body).Decode(&user)
+// 	// decode the json request to user
+// 	err = json.NewDecoder(r.Body).Decode(&user)
 
-	if err != nil {
-		log.Fatalf("Unable to decode the request body.  %v", err)
-	}
+// 	if err != nil {
+// 		log.Fatalf("Unable to decode the request body.  %v", err)
+// 	}
 
-	// call update user to update the user
-	updatedRows := updateUser(int64(id), user)
+// 	// call update user to update the user
+// 	updatedRows := updateUser(int64(id), user)
 
-	// format the message string
-	msg := fmt.Sprintf("User updated successfully. Total rows/record affected %v", updatedRows)
+// 	// format the message string
+// 	msg := fmt.Sprintf("User updated successfully. Total rows/record affected %v", updatedRows)
 
-	// format the response message
-	res := response{
-		ID:      int64(id),
-		Message: msg,
-	}
+// 	// format the response message
+// 	res := response{
+// 		ID:      int64(id),
+// 		Message: msg,
+// 	}
 
-	// send the response
-	json.NewEncoder(w).Encode(res)
-}
+// 	// send the response
+// 	json.NewEncoder(w).Encode(res)
+// }
 
 // DeleteUser delete user's detail in the postgres db
-func DeleteUser(w http.ResponseWriter, r *http.Request) {
+func DeleteImage(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -213,7 +214,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 //------------------------- handler functions ----------------
 // insert one user in the DB
-func insertUser(user models.User) int64 {
+func insertImage(image models.Image) int64 {
 
 	// create the postgres db connection
 	db := createConnection()
@@ -223,14 +224,21 @@ func insertUser(user models.User) int64 {
 
 	// create the insert sql query
 	// returning userid will return the id of the inserted user
-	sqlStatement := `INSERT INTO users (name, location, age) VALUES ($1, $2, $3) RETURNING userid`
+	sqlStatement := `INSERT INTO images (name, location, age) VALUES ($1, $2, $3) RETURNING userid`
+
+	/*
+		Here I believe we'll have to accept an array of tags and insert them into
+		the database seperately
+
+		I think it may be necessary to create an images with tags model
+	*/
 
 	// the inserted id will store in this id
 	var id int64
 
 	// execute the sql statement
 	// Scan function will save the insert id in the id
-	err := db.QueryRow(sqlStatement, user.Name, user.Location, user.Age).Scan(&id)
+	err := db.QueryRow(sqlStatement, image.Name, image.URL, image.Description).Scan(&id)
 
 	if err != nil {
 		log.Fatalf("Unable to execute the query. %v", err)
@@ -243,7 +251,7 @@ func insertUser(user models.User) int64 {
 }
 
 // get one user from the DB by its userid
-func getUser(id int64) (models.User, error) {
+func getImage(id int64) (models.Image, error) {
 	// create the postgres db connection
 	db := createConnection()
 
@@ -251,43 +259,43 @@ func getUser(id int64) (models.User, error) {
 	defer db.Close()
 
 	// create a user of models.User type
-	var user models.User
+	var image models.Image
 
 	// create the select sql query
-	sqlStatement := `SELECT * FROM users WHERE userid=$1`
+	sqlStatement := `SELECT * FROM images WHERE userid=$1`
 
 	// execute the sql statement
 	row := db.QueryRow(sqlStatement, id)
 
 	// unmarshal the row object to user
-	err := row.Scan(&user.ID, &user.Name, &user.Age, &user.Location)
+	err := row.Scan(&image.ID, &image.Name, &image.Description, &image.URL)
 
 	switch err {
 	case sql.ErrNoRows:
 		fmt.Println("No rows were returned!")
-		return user, nil
+		return image, nil
 	case nil:
-		return user, nil
+		return image, nil
 	default:
 		log.Fatalf("Unable to scan the row. %v", err)
 	}
 
 	// return empty user on error
-	return user, err
+	return image, err
 }
 
 // get one user from the DB by its userid
-func getAllUsers() ([]models.User, error) {
+func getAllUsers() ([]models.Image, error) {
 	// create the postgres db connection
 	db := createConnection()
 
 	// close the db connection
 	defer db.Close()
 
-	var users []models.User
+	var images []models.Image
 
 	// create the select sql query
-	sqlStatement := `SELECT * FROM users`
+	sqlStatement := `SELECT * FROM images`
 
 	// execute the sql statement
 	rows, err := db.Query(sqlStatement)
@@ -301,57 +309,57 @@ func getAllUsers() ([]models.User, error) {
 
 	// iterate over the rows
 	for rows.Next() {
-		var user models.User
+		var image models.Image
 
 		// unmarshal the row object to user
-		err = rows.Scan(&user.ID, &user.Name, &user.Age, &user.Location)
+		err = rows.Scan(&image.ID, &image.Name, &image.Description, &image.URL)
 
 		if err != nil {
 			log.Fatalf("Unable to scan the row. %v", err)
 		}
 
 		// append the user in the users slice
-		users = append(users, user)
+		images = append(images, image)
 
 	}
 
 	// return empty user on error
-	return users, err
+	return images, err
 }
 
 // update user in the DB
-func updateUser(id int64, user models.User) int64 {
+// func updateUser(id int64, image models.Image) int64 {
 
-	// create the postgres db connection
-	db := createConnection()
+// 	// create the postgres db connection
+// 	db := createConnection()
 
-	// close the db connection
-	defer db.Close()
+// 	// close the db connection
+// 	defer db.Close()
 
-	// create the update sql query
-	sqlStatement := `UPDATE users SET name=$2, location=$3, age=$4 WHERE userid=$1`
+// 	// create the update sql query
+// 	sqlStatement := `UPDATE users SET name=$2, location=$3, age=$4 WHERE userid=$1`
 
-	// execute the sql statement
-	res, err := db.Exec(sqlStatement, id, user.Name, user.Location, user.Age)
+// 	// execute the sql statement
+// 	res, err := db.Exec(sqlStatement, id, user.Name, user.Location, user.Age)
 
-	if err != nil {
-		log.Fatalf("Unable to execute the query. %v", err)
-	}
+// 	if err != nil {
+// 		log.Fatalf("Unable to execute the query. %v", err)
+// 	}
 
-	// check how many rows affected
-	rowsAffected, err := res.RowsAffected()
+// 	// check how many rows affected
+// 	rowsAffected, err := res.RowsAffected()
 
-	if err != nil {
-		log.Fatalf("Error while checking the affected rows. %v", err)
-	}
+// 	if err != nil {
+// 		log.Fatalf("Error while checking the affected rows. %v", err)
+// 	}
 
-	fmt.Printf("Total rows/record affected %v", rowsAffected)
+// 	fmt.Printf("Total rows/record affected %v", rowsAffected)
 
-	return rowsAffected
-}
+// 	return rowsAffected
+// }
 
 // delete user in the DB
-func deleteUser(id int64) int64 {
+func deleteImage(id int64) int64 {
 
 	// create the postgres db connection
 	db := createConnection()
@@ -360,7 +368,7 @@ func deleteUser(id int64) int64 {
 	defer db.Close()
 
 	// create the delete sql query
-	sqlStatement := `DELETE FROM users WHERE userid=$1`
+	sqlStatement := `DELETE FROM images WHERE image_id=$1`
 
 	// execute the sql statement
 	res, err := db.Exec(sqlStatement, id)
