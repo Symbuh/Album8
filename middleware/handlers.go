@@ -82,8 +82,9 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// call insert user function and pass the user
-	insertID := insertImage(image)
+	insertedImageID := insertImage(image)
 
+	insertedTagID := insertTag(image)
 	// format a response object
 	res := response{
 		ID:      insertID,
@@ -224,7 +225,7 @@ func insertImage(image models.Image) int64 {
 
 	// create the insert sql query
 	// returning userid will return the id of the inserted user
-	sqlStatement := `INSERT INTO images (name, location, age) VALUES ($1, $2, $3) RETURNING userid`
+	sqlStatement := `INSERT INTO images (url, name, description) VALUES ($1, $2, $3) RETURNING userid`
 
 	/*
 		Here I believe we'll have to accept an array of tags and insert them into
@@ -248,6 +249,14 @@ func insertImage(image models.Image) int64 {
 
 	// return the inserted id
 	return id
+}
+
+func insertTags(id int64, tags []models.Tag) {
+	db := createConnection()
+
+	defer db.Close()
+
+	var tags []models.Image
 }
 
 // get one user from the DB by its userid
@@ -285,7 +294,7 @@ func getImage(id int64) (models.Image, error) {
 }
 
 // get one user from the DB by its userid
-func getAllUsers() ([]models.Image, error) {
+func getAllImages() ([]models.Image, error) {
 	// create the postgres db connection
 	db := createConnection()
 
