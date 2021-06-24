@@ -5,6 +5,7 @@ type Tag struct {
 }
 
 type Image struct {
+	ID          int64  `json:"id"`
 	URL         string `json:"url"`
 	Name        string `json:"name"`
 	Description string `json:"description"`

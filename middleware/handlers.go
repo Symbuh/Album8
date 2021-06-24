@@ -84,7 +84,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	// call insert user function and pass the user
 	insertedImageID := insertImage(image)
 
-	insertedTagID := insertTag(image)
+	insertedTagID := insertTags(insertedImageID, image.Tags)
 	// format a response object
 	res := response{
 		ID:      insertID,
@@ -135,50 +135,6 @@ func GetAllImages(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(images)
 }
 
-// UpdateUser update user's detail in the postgres db
-// func UpdateUser(w http.ResponseWriter, r *http.Request) {
-
-// 	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
-// 	w.Header().Set("Access-Control-Allow-Origin", "*")
-// 	w.Header().Set("Access-Control-Allow-Methods", "PUT")
-// 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-// 	// get the userid from the request params, key is "id"
-// 	params := mux.Vars(r)
-
-// 	// convert the id type from string to int
-// 	id, err := strconv.Atoi(params["id"])
-
-// 	if err != nil {
-// 		log.Fatalf("Unable to convert the string into int.  %v", err)
-// 	}
-
-// 	// create an empty user of type models.User
-// 	var user models.User
-
-// 	// decode the json request to user
-// 	err = json.NewDecoder(r.Body).Decode(&user)
-
-// 	if err != nil {
-// 		log.Fatalf("Unable to decode the request body.  %v", err)
-// 	}
-
-// 	// call update user to update the user
-// 	updatedRows := updateUser(int64(id), user)
-
-// 	// format the message string
-// 	msg := fmt.Sprintf("User updated successfully. Total rows/record affected %v", updatedRows)
-
-// 	// format the response message
-// 	res := response{
-// 		ID:      int64(id),
-// 		Message: msg,
-// 	}
-
-// 	// send the response
-// 	json.NewEncoder(w).Encode(res)
-// }
-
 // DeleteUser delete user's detail in the postgres db
 func DeleteImage(w http.ResponseWriter, r *http.Request) {
 
@@ -198,7 +154,7 @@ func DeleteImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// call the deleteUser, convert the int to int64
-	deletedRows := deleteUser(int64(id))
+	deletedRows := deleteImage(int64(id))
 
 	// format the message string
 	msg := fmt.Sprintf("User updated successfully. Total rows/record affected %v", deletedRows)
@@ -225,7 +181,7 @@ func insertImage(image models.Image) int64 {
 
 	// create the insert sql query
 	// returning userid will return the id of the inserted user
-	sqlStatement := `INSERT INTO images (url, name, description) VALUES ($1, $2, $3) RETURNING userid`
+	sqlStatement := `INSERT INTO images (url, name, description) VALUES ($1, $2, $3) RETURNING image_id`
 
 	/*
 		Here I believe we'll have to accept an array of tags and insert them into
@@ -251,12 +207,24 @@ func insertImage(image models.Image) int64 {
 	return id
 }
 
-func insertTags(id int64, tags []models.Tag) {
+func insertTags(id int64, tags []models.Tag) int64 {
 	db := createConnection()
 
 	defer db.Close()
 
-	var tags []models.Image
+	sqlStatement := (`INSERT INTO image_tags (image_id, tags) VALUES ($1, ARRAY$2) returning image_id`)
+
+	var image_id int64
+
+	err := db.QueryRow(sqlStatement, id, tags).Scan(&image_id)
+
+	if err != nil {
+		log.Fatalf("Unable to execute the query, failed to insert tags!")
+	}
+
+	fmt.Printf("Inserted a single record %v", image_id)
+
+	return image_id
 }
 
 // get one user from the DB by its userid
@@ -271,8 +239,8 @@ func getImage(id int64) (models.Image, error) {
 	var image models.Image
 
 	// create the select sql query
-	sqlStatement := `SELECT * FROM images WHERE userid=$1`
-
+	sqlStatement := `SELECT * FROM images WHERE image_id=$1`
+	// We may have to search by image name here insetead but for now this will work.
 	// execute the sql statement
 	row := db.QueryRow(sqlStatement, id)
 
@@ -335,37 +303,6 @@ func getAllImages() ([]models.Image, error) {
 	// return empty user on error
 	return images, err
 }
-
-// update user in the DB
-// func updateUser(id int64, image models.Image) int64 {
-
-// 	// create the postgres db connection
-// 	db := createConnection()
-
-// 	// close the db connection
-// 	defer db.Close()
-
-// 	// create the update sql query
-// 	sqlStatement := `UPDATE users SET name=$2, location=$3, age=$4 WHERE userid=$1`
-
-// 	// execute the sql statement
-// 	res, err := db.Exec(sqlStatement, id, user.Name, user.Location, user.Age)
-
-// 	if err != nil {
-// 		log.Fatalf("Unable to execute the query. %v", err)
-// 	}
-
-// 	// check how many rows affected
-// 	rowsAffected, err := res.RowsAffected()
-
-// 	if err != nil {
-// 		log.Fatalf("Error while checking the affected rows. %v", err)
-// 	}
-
-// 	fmt.Printf("Total rows/record affected %v", rowsAffected)
-
-// 	return rowsAffected
-// }
 
 // delete user in the DB
 func deleteImage(id int64) int64 {
