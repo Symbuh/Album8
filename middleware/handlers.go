@@ -84,10 +84,13 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 	// call insert user function and pass the user
 	insertedImageID := insertImage(image)
 
+	/*
+
+	 */
 	insertedTagID := insertTags(insertedImageID, image.Tags)
 	// format a response object
 	res := response{
-		ID:      insertID,
+		ID:      insertedImageID,
 		Message: "Image saved successfully",
 	}
 
@@ -239,7 +242,7 @@ func getImage(id int64) (models.Image, error) {
 	var image models.Image
 
 	// create the select sql query
-	sqlStatement := `SELECT * FROM images WHERE image_id=$1`
+	sqlStatement := `SELECT images.image_id, images.url, images.name, images.description, image_tags.tags FROM images LEFT OUTER JOIN image_tags ON images.image_id=image_tags.image_id WHERE images.image_id=$1;`
 	// We may have to search by image name here insetead but for now this will work.
 	// execute the sql statement
 	row := db.QueryRow(sqlStatement, id)
@@ -272,7 +275,7 @@ func getAllImages() ([]models.Image, error) {
 	var images []models.Image
 
 	// create the select sql query
-	sqlStatement := `SELECT images.image_id, images.url, images.name, images.description, tags.tags FROM images LEFT OUTER JOIN tags ON images.image_id=tags.image_id`
+	sqlStatement := `SELECT images.image_id, images.url, images.name, images.description, image_tags.tags FROM images LEFT OUTER JOIN image_tags ON images.image_id=image_tags.image_id;`
 
 	// execute the sql statement
 	rows, err := db.Query(sqlStatement)
