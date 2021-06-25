@@ -88,6 +88,8 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 
 	 */
 	insertedTagID := insertTags(insertedImageID, image.Tags)
+
+	fmt.Print(insertedTagID)
 	// format a response object
 	res := response{
 		ID:      insertedImageID,

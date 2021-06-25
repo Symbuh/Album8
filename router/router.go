@@ -11,11 +11,10 @@ func Router() *mux.Router {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/api/user/{id}", middleware.GetImage).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/user", middleware.GetAllImages).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/newuser", middleware.CreateImage).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/user/{id}", middleware.UpdateUser).Methods("PUT", "OPTIONS")
-	router.HandleFunc("/api/deleteuser/{id}", middleware.DeleteImage).Methods("DELETE", "OPTIONS")
+	router.HandleFunc("/api/image/{id}", middleware.GetImage).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/image", middleware.GetAllImages).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/newimage", middleware.CreateImage).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/deleteimage/{id}", middleware.DeleteImage).Methods("DELETE", "OPTIONS")
 
 	return router
 }
