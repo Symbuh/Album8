@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	// "database/sql"
+	//"database/sql"
 	// "encoding/json"
 	// "fmt"
 	// "go-postgres/models"
@@ -12,7 +12,6 @@ import (
 
 	// "github.com/gorilla/mux"
 	// "github.com/joho/godotenv" // package used to read the .env file
-	//   _ "github.com/lib/pq"      // postgres golang driver
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -25,6 +24,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv" // package used to read the .env file
+	"github.com/lib/pq"
+	_ "github.com/lib/pq" // postgres golang driver
 	// postgres golang driver
 )
 
@@ -212,7 +213,7 @@ func insertImage(image models.Image) int64 {
 	return id
 }
 
-func insertTags(id int64, tags []models.Tag) int64 {
+func insertTags(id int64, tags []string) int64 {
 	db := createConnection()
 
 	defer db.Close()
@@ -242,16 +243,16 @@ func getImage(id int64) (models.Image, error) {
 
 	// create a user of models.User type
 	var image models.Image
-
+	//var tag models.Tag
 	// create the select sql query
 	sqlStatement := `SELECT images.image_id, images.url, images.name, images.description, image_tags.tags FROM images LEFT OUTER JOIN image_tags ON images.image_id=image_tags.image_id WHERE images.image_id=$1;`
 	// We may have to search by image name here insetead but for now this will work.
 	// execute the sql statement
 	row := db.QueryRow(sqlStatement, id)
-
+	fmt.Print("row:")
+	fmt.Println(row)
 	// unmarshal the row object to user
-	err := row.Scan(&image.ID, &image.Name, &image.Description, &image.URL)
-
+	err := row.Scan(&image.ID, &image.Name, &image.Description, &image.URL, pq.Array(&image.Tags))
 	switch err {
 	case sql.ErrNoRows:
 		fmt.Println("No rows were returned!")
@@ -294,7 +295,7 @@ func getAllImages() ([]models.Image, error) {
 		var image models.Image
 
 		// unmarshal the row object to user
-		err = rows.Scan(&image.ID, &image.Name, &image.Description, &image.URL)
+		err = rows.Scan(&image.ID, &image.URL, &image.Name, &image.Description)
 
 		if err != nil {
 			log.Fatalf("Unable to scan the row. %v", err)
