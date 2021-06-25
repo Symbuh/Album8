@@ -131,7 +131,7 @@ func GetAllImages(w http.ResponseWriter, r *http.Request) {
 	images, err := getAllImages()
 
 	if err != nil {
-		log.Fatalf("Unable to get all user. %v", err)
+		log.Fatalf("Unable to get all images! %v", err)
 	}
 
 	// send all the users as response
@@ -184,7 +184,7 @@ func insertImage(image models.Image) int64 {
 
 	// create the insert sql query
 	// returning userid will return the id of the inserted user
-	sqlStatement := `INSERT INTO images (url, name, description) VALUES ($1, $2, $3) RETURNING image_id`
+	sqlStatement := `INSERT INTO images (url, name, description VALUES) ($1, $2, $3) RETURNING image_id;`
 
 	/*
 		Here I believe we'll have to accept an array of tags and insert them into

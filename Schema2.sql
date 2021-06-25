@@ -5,7 +5,6 @@ CREATE TABLE images (
   description varchar NOT NULL
 );
 
-
 CREATE TABLE image_tags (
   image_id int not null references images(image_id) ON UPDATE CASCADE ON DELETE CASCADE,
   tags text[] not null default '{}'
