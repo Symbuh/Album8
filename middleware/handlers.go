@@ -63,7 +63,7 @@ func createConnection() *sql.DB {
 }
 
 // CreateUser create a user in the postgres db
-func CreateUser(w http.ResponseWriter, r *http.Request) {
+func CreateImage(w http.ResponseWriter, r *http.Request) {
 	// set the header to content type x-www-form-urlencoded
 	// Allow all origin to handle cors issue
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
@@ -272,7 +272,7 @@ func getAllImages() ([]models.Image, error) {
 	var images []models.Image
 
 	// create the select sql query
-	sqlStatement := `SELECT * FROM images`
+	sqlStatement := `SELECT images.image_id, images.url, images.name, images.description, tags.tags FROM images LEFT OUTER JOIN tags ON images.image_id=tags.image_id`
 
 	// execute the sql statement
 	rows, err := db.Query(sqlStatement)
