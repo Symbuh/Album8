@@ -84,7 +84,9 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 
 	// call insert user function and pass the user
 	insertedImageID := insertImage(image)
-
+	/*
+		I think I want this to also return an error. We need to catch this error somewhere.
+	*/
 	/*
 
 	 */
@@ -177,7 +179,7 @@ func DeleteImage(w http.ResponseWriter, r *http.Request) {
 
 //------------------------- handler functions ----------------
 // insert one user in the DB
-func insertImage(image models.Image) int64 {
+func insertImage(image models.Image) (int64, error) {
 
 	// create the postgres db connection
 	db := createConnection()
@@ -204,16 +206,17 @@ func insertImage(image models.Image) int64 {
 	err := db.QueryRow(sqlStatement, image.Name, image.URL, image.Description).Scan(&id)
 
 	if err != nil {
-		log.Fatalf("Unable to execute the query. %v", err)
+		// log.Fatalf("Unable to execute the query. %v", err)
+		return id, err
 	}
 
 	fmt.Printf("Inserted a single record %v", id)
 
 	// return the inserted id
-	return id
+	return id, nil
 }
 
-func insertTags(id int64, tags []string) int64 {
+func insertTags(id int64, tags []string) (int64, error) {
 	db := createConnection()
 
 	defer db.Close()
@@ -311,7 +314,7 @@ func getAllImages() ([]models.Image, error) {
 }
 
 // delete user in the DB
-func deleteImage(id int64) int64 {
+func deleteImage(id int64) (int64, error) {
 
 	// create the postgres db connection
 	db := createConnection()
@@ -327,6 +330,7 @@ func deleteImage(id int64) int64 {
 
 	if err != nil {
 		log.Fatalf("Unable to execute the query. %v", err)
+		// return res, err
 	}
 
 	// check how many rows affected
@@ -338,7 +342,7 @@ func deleteImage(id int64) int64 {
 
 	fmt.Printf("Total rows/record affected %v", rowsAffected)
 
-	return rowsAffected
+	return rowsAffected, err
 }
 
 func delete_image_tags(id int64) int64 {
