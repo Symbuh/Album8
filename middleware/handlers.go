@@ -83,14 +83,14 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// call insert user function and pass the user
-	insertedImageID := insertImage(image)
+	insertedImageID, err := insertImage(image)
 	/*
 		I think I want this to also return an error. We need to catch this error somewhere.
 	*/
 	/*
 
 	 */
-	insertedTagID := insertTags(insertedImageID, image.Tags)
+	insertedTagID, err := insertTags(insertedImageID, image.Tags)
 
 	fmt.Print(insertedTagID)
 	// format a response object
@@ -162,7 +162,7 @@ func DeleteImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// call the deleteUser, convert the int to int64
-	deletedRows := deleteImage(int64(id))
+	deletedRows, err := deleteImage(int64(id))
 
 	// format the message string
 	msg := fmt.Sprintf("User updated successfully. Total rows/record affected %v", deletedRows)
@@ -228,12 +228,13 @@ func insertTags(id int64, tags []string) (int64, error) {
 	err := db.QueryRow(sqlStatement, id, tags).Scan(&image_id)
 
 	if err != nil {
-		log.Fatalf("Unable to execute the query, failed to insert tags!")
+		fmt.Printf("Unable to execute the query, failed to insert tags!")
+		return image_id, err
 	}
 
 	fmt.Printf("Inserted a single record %v", image_id)
 
-	return image_id
+	return image_id, nil
 }
 
 // get one user from the DB by its userid
