@@ -114,15 +114,18 @@ func GetImage(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(params["id"])
 
 	if err != nil {
-		// log.Fatalf("Unable to convert the string into int.  %v", err)
+		//log.Fatalf("Unable to convert the string into int.  %v", err)
 		http.Error(w, err.Error(), 500)
+		return
 	}
 
 	// call the getUser function with user id to retrieve a single user
 	image, err := getImage(int64(id))
-
+	fmt.Print(err)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
+		// json.NewEncoder(w).Encode(err)
+		return
 	}
 
 	// send the response
@@ -166,7 +169,7 @@ func DeleteImage(w http.ResponseWriter, r *http.Request) {
 	deletedRows, err := deleteImage(int64(id))
 
 	if err != nil {
-		http.Error(w, err, 400)
+		http.Error(w, err.Error(), 400)
 	}
 
 	// format the message string
