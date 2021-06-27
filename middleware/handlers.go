@@ -114,14 +114,15 @@ func GetImage(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(params["id"])
 
 	if err != nil {
-		log.Fatalf("Unable to convert the string into int.  %v", err)
+		// log.Fatalf("Unable to convert the string into int.  %v", err)
+		http.Error(w, err.Error(), 500)
 	}
 
 	// call the getUser function with user id to retrieve a single user
 	image, err := getImage(int64(id))
 
 	if err != nil {
-		log.Fatalf("Unable to get image. %v", err)
+		http.Error(w, err.Error(), 400)
 	}
 
 	// send the response
@@ -163,6 +164,10 @@ func DeleteImage(w http.ResponseWriter, r *http.Request) {
 
 	// call the deleteUser, convert the int to int64
 	deletedRows, err := deleteImage(int64(id))
+
+	if err != nil {
+		http.Error(w, err, 400)
+	}
 
 	// format the message string
 	msg := fmt.Sprintf("User updated successfully. Total rows/record affected %v", deletedRows)
