@@ -23,10 +23,9 @@ import (
 	"github.com/Symbuh/foundant-technologies-challenge/models"
 
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv" // package used to read the .env file
+	"github.com/joho/godotenv"
 	"github.com/lib/pq"
-	_ "github.com/lib/pq" // postgres golang driver
-	// postgres golang driver
+	_ "github.com/lib/pq"
 )
 
 // response format
@@ -79,11 +78,17 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&image)
 
 	if err != nil {
-		log.Fatalf("Unable to decode the request body.  %v", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	// call insert user function and pass the user
 	insertedImageID, err := insertImage(image)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	/*
 		I think I want this to also return an error. We need to catch this error somewhere.
 	*/
@@ -92,6 +97,10 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 	 */
 	insertedTagID, err := insertTags(insertedImageID, image.Tags)
 
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	fmt.Print(insertedTagID)
 	// format a response object
 	res := response{
@@ -115,19 +124,21 @@ func GetImage(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		//log.Fatalf("Unable to convert the string into int.  %v", err)
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	// call the getUser function with user id to retrieve a single user
 	image, err := getImage(int64(id))
-	fmt.Print(err)
+	fmt.Println("Here is our error: ")
+	fmt.Println(err)
 	if err != nil {
-		http.Error(w, err.Error(), 400)
+		fmt.Println("We have entered the magical error block in question")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		// json.NewEncoder(w).Encode(err)
 		return
 	}
-
+	fmt.Println("We are about to send the naughty response back")
 	// send the response
 	json.NewEncoder(w).Encode(image)
 }
@@ -162,14 +173,16 @@ func DeleteImage(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(params["id"])
 
 	if err != nil {
-		log.Fatalf("Unable to convert the string into int.  %v", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	// call the deleteUser, convert the int to int64
 	deletedRows, err := deleteImage(int64(id))
 
 	if err != nil {
-		http.Error(w, err.Error(), 400)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	// format the message string
@@ -268,15 +281,15 @@ func getImage(id int64) (models.Image, error) {
 	switch err {
 	case sql.ErrNoRows:
 		fmt.Println("No rows were returned!")
-		return image, nil
+		return image, err
 	case nil:
 		return image, nil
 	default:
-		log.Fatalf("Unable to scan the row. %v", err)
+		return image, err
 	}
 
 	// return empty user on error
-	return image, err
+	// return image, err
 }
 
 // get one user from the DB by its userid
@@ -307,7 +320,7 @@ func getAllImages() ([]models.Image, error) {
 		var image models.Image
 
 		// unmarshal the row object to user
-		err = rows.Scan(&image.ID, &image.URL, &image.Name, &image.Description)
+		err = rows.Scan(&image.ID, &image.URL, &image.Name, &image.Description, pq.Array(&image.Tags))
 
 		if err != nil {
 			log.Fatalf("Unable to scan the row. %v", err)
@@ -338,7 +351,7 @@ func deleteImage(id int64) (int64, error) {
 	res, err := db.Exec(sqlStatement, id)
 
 	if err != nil {
-		log.Fatalf("Unable to execute the query. %v", err)
+		return -1, err
 		// return res, err
 	}
 
@@ -346,15 +359,15 @@ func deleteImage(id int64) (int64, error) {
 	rowsAffected, err := res.RowsAffected()
 
 	if err != nil {
-		log.Fatalf("Error while checking the affected rows. %v", err)
+		return rowsAffected, err
 	}
 
 	fmt.Printf("Total rows/record affected %v", rowsAffected)
 
-	return rowsAffected, err
+	return rowsAffected, nil
 }
 
-func delete_image_tags(id int64) int64 {
+func delete_image_tags(id int64) (int64, error) {
 
 	// create the postgres db connection
 	db := createConnection()
@@ -369,17 +382,18 @@ func delete_image_tags(id int64) int64 {
 	res, err := db.Exec(sqlStatement, id)
 
 	if err != nil {
-		log.Fatalf("Unable to execute the query. %v", err)
+		// log.Fatalf("Unable to execute the query. %v", err)
+		return -1, err
 	}
 
 	// check how many rows affected
 	rowsAffected, err := res.RowsAffected()
 
 	if err != nil {
-		log.Fatalf("Error while checking the affected rows. %v", err)
+		return -1, err
 	}
 
 	fmt.Printf("Total rows/record affected %v", rowsAffected)
 
-	return rowsAffected
+	return rowsAffected, nil
 }

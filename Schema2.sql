@@ -10,5 +10,6 @@ CREATE TABLE image_tags (
   tags text[] not null default '{}'
 );
 
-unique index image_tags_id_image_id on (image_id);
-index image_tags_id_tags using gin (tags);
+create unique index image_tags_id_image_id on image_tags (image_id);
+create index image_tags_id_tags on image_tags using gin (tags);
+Create index image_id_idx on images (image_id);

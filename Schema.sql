@@ -24,5 +24,5 @@ CREATE TABLE images_tags (
   CONSTRAINT images_tags_pkey PRIMARY KEY (image_id, tag_id)
 )
 
-Create index image_id_idx on images_tags (image_id);
+Create index image_id_idx on images (image_id);
 create index tag_id_idx on images_tags (tag_id);
