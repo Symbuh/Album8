@@ -69,8 +69,11 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Acess-Control-Allow-Headers, Authorization, X-Requested-With")
 
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+	}
 	// create an empty user of type models.User
 	var image models.Image
 
@@ -82,6 +85,9 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Print(image.Name)
+	fmt.Print(image.URL)
+	fmt.Print(image.Tags)
 	// call insert user function and pass the user
 	insertedImageID, err := insertImage(image)
 
@@ -210,7 +216,7 @@ func insertImage(image models.Image) (int64, error) {
 
 	// create the insert sql query
 	// returning userid will return the id of the inserted user
-	sqlStatement := `INSERT INTO images (url, name, description VALUES) ($1, $2, $3) RETURNING image_id;`
+	sqlStatement := `INSERT INTO images (url, name, description) VALUES ($1, $2, $3) RETURNING image_id;`
 
 	/*
 		Here I believe we'll have to accept an array of tags and insert them into
@@ -241,12 +247,12 @@ func insertTags(id int64, tags []string) (int64, error) {
 	db := createConnection()
 
 	defer db.Close()
-
-	sqlStatement := (`INSERT INTO image_tags (image_id, tags) VALUES ($1, ARRAY$2) returning image_id`)
+	fmt.Print(tags)
+	sqlStatement := (`INSERT INTO image_tags (image_id, tags) VALUES ($1, $2) returning image_id`)
 
 	var image_id int64
 
-	err := db.QueryRow(sqlStatement, id, tags).Scan(&image_id)
+	err := db.QueryRow(sqlStatement, id, pq.Array(tags)).Scan(&image_id)
 
 	if err != nil {
 		fmt.Printf("Unable to execute the query, failed to insert tags!")

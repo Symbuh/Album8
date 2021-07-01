@@ -2,7 +2,7 @@ import { time } from 'console'
 import React, {FC, useEffect, useState} from 'react'
 import { isIndexedAccessTypeNode } from 'typescript'
 import { cloudinaryInstance } from './../axiosConfig'
-import UploadModal from './UploadModal'
+import UploadModal from './UploadDetailsModal/UploadModal'
 
 const UploadFile: FC = () => {
   const [selectedImage, setImage] = useState('')
@@ -27,22 +27,13 @@ const UploadFile: FC = () => {
     cloudinaryInstance.post('/image/upload', data)
     .then((res: any) => {
       console.log(res)
-      setURL(res.secure_url)
+      setURL(res.data.secure_url)
     })
     .catch((err) => {
       console.error('Failed to upload image!')
     })
   }
 
-  // const sendFile = () => {
-  //   const accept = ['image/png']
-  //   if (selectedImage) {
-  //     if (accept.indexOf(selectedImage.mediaType) > -1) {
-
-  //     }
-  //   }
-
-  // }
   return (
     <div className='imageUploadConatainer'>
       <input type='file' onChange={handleChange} />

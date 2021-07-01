@@ -9,5 +9,5 @@ type Image struct {
 	URL         string   `json:"url"`
 	Name        string   `json:"name"`
 	Description string   `json:"description"`
-	Tags        []string `json:"image_tags"`
+	Tags        []string `json:"tags"`
 }

@@ -1,6 +1,7 @@
 import React, { FC, useState, useEffect } from 'react'
 import Modal from 'react-modal'
-import { apiInstance } from './../axiosConfig'
+import { apiInstance } from '../../axiosConfig'
+import SelectedTags from './SelectedTags'
 
 interface Props {
   url: string
@@ -16,10 +17,8 @@ const UploadModal: FC<Props> = ( { url }) => {
 
   useEffect(() => {
     const { name, description } = imageObject
-    console.log(`Calling useEffect name: ${name}, description: ${description}`)
     if (name !== '' && description !== '') {
       if(tags.length > 0) {
-        console.log('oh jeez man')
         setFormComplete(true)
       }
     }
@@ -47,6 +46,11 @@ const UploadModal: FC<Props> = ( { url }) => {
       if (!existingTags.includes(imageObject.tags)) {
         existingTags.push(imageObject.tags)
         setTags(existingTags)
+
+        setImg({
+          ...imageObject,
+          tags: ''
+        })
       }
     }
   }
@@ -55,7 +59,7 @@ const UploadModal: FC<Props> = ( { url }) => {
     if (formComplete) {
       const requestBody: any = imageObject
       requestBody.tags = tags
-      apiInstance.post('/api/newimage', requestBody)
+      apiInstance.post('/api/newimage', JSON.stringify(requestBody))
       .then(res => {
         console.log(res)
       })
@@ -64,6 +68,12 @@ const UploadModal: FC<Props> = ( { url }) => {
       })
     }
     closeModal()
+    setImg({
+      name: '',
+      description: '',
+      url: '',
+      tags: ''
+    })
   }
 
   return (
@@ -78,20 +88,24 @@ const UploadModal: FC<Props> = ( { url }) => {
           type='text'
           placeholder='Photo Name'
           name='name'
+          value={imageObject.name}
           onChange={handleChange}/>
         <input
           type='text'
           placeholder='Description'
           name='description'
+          value={imageObject.description}
           onChange={handleChange}
         />
         <input
           type='text'
           placeholder='Tag'
           name='tags'
+          value={imageObject.tags}
           onChange={handleChange}
         />
         <button onClick={addTag}>Add Tag</button>
+        <SelectedTags tags={tags} />
         {
           formComplete && <button onClick={sendToAPI}>Submit</button>
         }
