@@ -27,7 +27,7 @@ const UploadFile: FC = () => {
     cloudinaryInstance.post('/image/upload', data)
     .then((res: any) => {
       console.log(res)
-      setURL(res.data.secure_url)
+      setURL(res.data.url)
     })
     .catch((err) => {
       console.error('Failed to upload image!')

@@ -66,14 +66,18 @@ func createConnection() *sql.DB {
 func CreateImage(w http.ResponseWriter, r *http.Request) {
 	// set the header to content type x-www-form-urlencoded
 	// Allow all origin to handle cors issue
-	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Context-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Acess-Control-Allow-Headers, Authorization, X-Requested-With")
-
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers",
+		"Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	// Check for preflight options request
 	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
+		return
 	}
+	// w.Header().Set("Access-Control-Allow-Methods", "POST")
+	// w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Acess-Control-Allow-Headers, Authorization, X-Requested-With")
+
 	// create an empty user of type models.User
 	var image models.Image
 
@@ -95,12 +99,7 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	/*
-		I think I want this to also return an error. We need to catch this error somewhere.
-	*/
-	/*
 
-	 */
 	insertedTagID, err := insertTags(insertedImageID, image.Tags)
 
 	if err != nil {
@@ -113,7 +112,9 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 		ID:      insertedImageID,
 		Message: "Image saved successfully",
 	}
-
+	// if r.Method == "OPTIONS" {
+	// 	w.WriteHeader(http.StatusOK)
+	// }
 	// send the response
 	json.NewEncoder(w).Encode(res)
 }
@@ -230,7 +231,7 @@ func insertImage(image models.Image) (int64, error) {
 
 	// execute the sql statement
 	// Scan function will save the insert id in the id
-	err := db.QueryRow(sqlStatement, image.Name, image.URL, image.Description).Scan(&id)
+	err := db.QueryRow(sqlStatement, image.URL, image.Name, image.Description).Scan(&id)
 
 	if err != nil {
 		// log.Fatalf("Unable to execute the query. %v", err)

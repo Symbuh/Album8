@@ -1,6 +1,7 @@
 import React, { FC, useState, useEffect } from 'react'
 import Modal from 'react-modal'
 import { apiInstance } from '../../axiosConfig'
+import axios from 'axios'
 import SelectedTags from './SelectedTags'
 
 interface Props {
@@ -59,13 +60,36 @@ const UploadModal: FC<Props> = ( { url }) => {
     if (formComplete) {
       const requestBody: any = imageObject
       requestBody.tags = tags
-      apiInstance.post('/api/newimage', JSON.stringify(requestBody))
-      .then(res => {
-        console.log(res)
+      // const headers = {
+
+      //   'Content-Type': 'application/json',
+      //   'Access-Control-Allow-Origin': '*'
+      // }
+      // apiInstance.post('/api/newimage', JSON.stringify(requestBody), {
+      //   headers: headers
+      // })
+      // .then(res => {
+      //   console.log(res)
+      // })
+      // .catch(err => {
+      //   console.log(err)
+      // })
+      var config: any = {
+        method: 'post',
+        url: 'http://localhost:8080/api/newimage',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(requestBody)
+      };
+
+      axios(config)
+      .then(function (response) {
+        console.log(JSON.stringify(response.data));
       })
-      .catch(err => {
-        console.log(err)
-      })
+      .catch(function (error) {
+        console.log(error);
+      });
     }
     closeModal()
     setImg({
