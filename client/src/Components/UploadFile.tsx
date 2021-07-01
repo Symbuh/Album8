@@ -1,12 +1,18 @@
 import { time } from 'console'
-import React, {FC, useState} from 'react'
+import React, {FC, useEffect, useState} from 'react'
 import { isIndexedAccessTypeNode } from 'typescript'
-import { cloudinaryInstance, apiInstance } from './../axiosConfig'
+import { cloudinaryInstance } from './../axiosConfig'
 import UploadModal from './UploadModal'
 
 const UploadFile: FC = () => {
   const [selectedImage, setImage] = useState('')
   const [newURL, setURL] = useState('')
+
+  useEffect(() => {
+    if (selectedImage !== '') {
+      sendToCloudinary()
+    }
+  }, [selectedImage])
 
   const handleChange = (event: any) => {
     setImage(event.target.files[0])
@@ -28,14 +34,6 @@ const UploadFile: FC = () => {
     })
   }
 
-  const sendToAPI = () => {
-    apiInstance.get('/')
-    .then((res: any) => {
-      console.log(res)
-    })
-    .catch((err: any)=> console.log(err))
-  }
-
   // const sendFile = () => {
   //   const accept = ['image/png']
   //   if (selectedImage) {
@@ -48,9 +46,8 @@ const UploadFile: FC = () => {
   return (
     <div className='imageUploadConatainer'>
       <input type='file' onChange={handleChange} />
-      <button onClick={sendToCloudinary}>Upload File</button>
       {
-        newURL !== undefined &&
+        newURL !== '' &&
         <UploadModal url={newURL}/>
       }
     </div>

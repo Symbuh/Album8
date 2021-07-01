@@ -1,6 +1,6 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 import Modal from 'react-modal'
-import { addSyntheticTrailingComment, setConstantValue } from 'typescript'
+import { apiInstance } from './../axiosConfig'
 
 interface Props {
   url: string
@@ -8,19 +8,24 @@ interface Props {
 
 const UploadModal: FC<Props> = ( { url }) => {
   const [modalIsOpen, setIsOpen] = useState(false)
-  const [imageObject, setImg] = useState({name: '', description: '', url: url, tag: ''})
+  const [formComplete, setFormComplete] = useState(false)
+  const [imageObject, setImg] = useState({
+    name: '', description: '', url: url, tags: ''
+  })
   const [tags, setTags] = useState([])
 
+  useEffect(() => {
+    const { name, description } = imageObject
+    console.log(`Calling useEffect name: ${name}, description: ${description}`)
+    if (name !== '' && description !== '') {
+      if(tags.length > 0) {
+        console.log('oh jeez man')
+        setFormComplete(true)
+      }
+    }
+  }, [imageObject, tags])
 
 
-  /*
-    It would be nice to save the form data as an object so that we can easily toss it into our
-    API
-
-    We want an image object with name url desc and tags
-
-    I think that we may need a seperate state variable to push our tags
-  */
   const openModal = () => {
     setIsOpen(true)
   }
@@ -37,8 +42,30 @@ const UploadModal: FC<Props> = ( { url }) => {
   }
 
   const addTag = () => {
-
+    let existingTags: any = tags as any
+    if (imageObject.tags !== '') {
+      if (!existingTags.includes(imageObject.tags)) {
+        existingTags.push(imageObject.tags)
+        setTags(existingTags)
+      }
+    }
   }
+
+  const sendToAPI = () => {
+    if (formComplete) {
+      const requestBody: any = imageObject
+      requestBody.tags = tags
+      apiInstance.post('/api/newimage', requestBody)
+      .then(res => {
+        console.log(res)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    }
+    closeModal()
+  }
+
   return (
     <div>
       <button onClick={openModal}>Upload Image</button>
@@ -61,10 +88,13 @@ const UploadModal: FC<Props> = ( { url }) => {
         <input
           type='text'
           placeholder='Tag'
-          name='tag'
+          name='tags'
           onChange={handleChange}
         />
         <button onClick={addTag}>Add Tag</button>
+        {
+          formComplete && <button onClick={sendToAPI}>Submit</button>
+        }
       </Modal>
     </div>
   )
