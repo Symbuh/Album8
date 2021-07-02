@@ -13,14 +13,16 @@ interface Props {
 const MainImageView: FC<Props> = ({id, name, url, description, tags, updateFunction}) => {
 
   const deleteImage = () => {
+    console.log('calling delete image')
     apiInstance.delete(`/api/deleteimage/${id}`)
     .then((res) => {
       console.log(res)
+      updateFunction()
     })
     .catch((err) => {
       console.log(err)
     })
-    updateFunction()
+
   }
 
   if (id !== '' && name !== '' && url !== '' && tags) {

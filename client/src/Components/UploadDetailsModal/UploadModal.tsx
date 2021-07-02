@@ -3,7 +3,6 @@ import Modal from 'react-modal'
 import { apiInstance } from '../../axiosConfig'
 import axios from 'axios'
 import SelectedTags from './SelectedTags'
-import { updateFunctionDeclaration } from 'typescript'
 
 interface Props {
   url: string,
@@ -59,6 +58,7 @@ const UploadModal: FC<Props> = ( { url, updateFunction }) => {
   }
 
   const sendToAPI = () => {
+    console.log('calling update function when sending to API')
     if (formComplete) {
       const requestBody: any = imageObject
       requestBody.tags = tags
@@ -80,7 +80,7 @@ const UploadModal: FC<Props> = ( { url, updateFunction }) => {
       });
     }
     closeModal()
-    updateFunction()
+    // updateFunction()
     setImg({
       name: '',
       description: '',

@@ -13,11 +13,7 @@ const UploadFile: FC<Props> = ({ updateFunction }) => {
   const [selectedImage, setImage] = useState('')
   const [newURL, setURL] = useState('')
 
-  useEffect(() => {
-    if (selectedImage !== '') {
-      sendToCloudinary()
-    }
-  }, [selectedImage])
+
 
   const handleChange = (event: any) => {
     setImage(event.target.files[0])
@@ -38,6 +34,12 @@ const UploadFile: FC<Props> = ({ updateFunction }) => {
       console.error('Failed to upload image!')
     })
   }
+
+  useEffect(() => {
+    if (selectedImage !== '') {
+      sendToCloudinary()
+    }
+  }, [selectedImage])
 
   return (
     <div className='imageUploadConatainer'>

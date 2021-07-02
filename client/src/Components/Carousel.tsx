@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react'
+import React, { FC, useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
 import apiInstance from './../axiosConfig'
 import Image from './Image'
@@ -12,9 +12,19 @@ const Carousel: FC = () => {
 
     map through these images and display them to the page.
   */
-
+    const [updateImage, setUpdateImage] = useState(false)
     const [images, setImages] = useState([]);
     const [{id, name, url, description, tags}, setSelectedImage] = useState({id: '', name: '', url: '', description: '', tags: ''});
+
+    useEffect(() => {
+      apiInstance.get('/api/image')
+      .then((response: any) => {
+        setImages(response.data)
+      })
+      .catch((err: any) => {
+        console.log(err);
+      })
+    }, [])
 
     const handleClick: any = (id: string, url: string, name: string, description: string, tags: any) => {
       setSelectedImage({
@@ -26,19 +36,22 @@ const Carousel: FC = () => {
       })
     }
 
-    useEffect(() => {
-      getImages()
+    const getImages = useCallback(() => {
+      console.log('hello')
     }, [])
 
-    const getImages = () => {
-      apiInstance.get('/api/image')
-      .then((response: any) => {
-        setImages(response.data)
-      })
-      .catch((err: any) => {
-        console.log(err);
-      })
-    }
+    // const getImages = () => {
+    //   console.log('at least the logs are working')
+    //   apiInstance.get('/api/image')
+    //   .then((response: any) => {
+    //     setImages(response.data)
+    //   })
+    //   .catch((err: any) => {
+    //     console.log(err);
+    //   })
+    // }
+
+
 
     return (
       <div>
