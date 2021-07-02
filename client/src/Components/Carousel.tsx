@@ -2,6 +2,9 @@ import React, { FC, useState, useEffect } from 'react'
 import axios from 'axios'
 import apiInstance from './../axiosConfig'
 import Image from './Image'
+import MainImageView from './SelectedImageDisplay/MainImageView'
+import UploadFile from './UploadFile'
+
 
 const Carousel: FC = () => {
   /*
@@ -11,8 +14,23 @@ const Carousel: FC = () => {
   */
 
     const [images, setImages] = useState([]);
+    const [{id, name, url, description, tags}, setSelectedImage] = useState({id: '', name: '', url: '', description: '', tags: ''});
+
+    const handleClick: any = (id: string, url: string, name: string, description: string, tags: any) => {
+      setSelectedImage({
+        id: id,
+        url: url,
+        name: name,
+        description: description,
+        tags: tags
+      })
+    }
 
     useEffect(() => {
+      getImages()
+    }, [])
+
+    const getImages = () => {
       apiInstance.get('/api/image')
       .then((response: any) => {
         setImages(response.data)
@@ -20,26 +38,39 @@ const Carousel: FC = () => {
       .catch((err: any) => {
         console.log(err);
       })
-    }, [])
+    }
 
     return (
       <div>
+        <div>
+          <UploadFile updateFunction={getImages}/>
+        </div>
         {
           images.map((image) => {
-            const {id, url, name, description, image_tags} = image
+            const {id, url, name, description, tags} = image
             return (
-              <div>
+              <div onClick={handleClick( id, url, name, description, tags)}>
                 <Image
                   id={id}
                   url={url}
                   name={name}
                   description={description}
-                  tags={image_tags}
+                  tags={tags}
                 />
               </div>
             )
           })
         }
+        <div>
+          <MainImageView
+            id={id}
+            name={name}
+            url={url}
+            description={description}
+            tags={tags}
+            updateFunction={getImages}
+          />
+        </div>
       </div>
     )
 }

@@ -3,12 +3,14 @@ import Modal from 'react-modal'
 import { apiInstance } from '../../axiosConfig'
 import axios from 'axios'
 import SelectedTags from './SelectedTags'
+import { updateFunctionDeclaration } from 'typescript'
 
 interface Props {
-  url: string
+  url: string,
+  updateFunction: () => void
 }
 
-const UploadModal: FC<Props> = ( { url }) => {
+const UploadModal: FC<Props> = ( { url, updateFunction }) => {
   const [modalIsOpen, setIsOpen] = useState(false)
   const [formComplete, setFormComplete] = useState(false)
   const [imageObject, setImg] = useState({
@@ -60,20 +62,6 @@ const UploadModal: FC<Props> = ( { url }) => {
     if (formComplete) {
       const requestBody: any = imageObject
       requestBody.tags = tags
-      // const headers = {
-
-      //   'Content-Type': 'application/json',
-      //   'Access-Control-Allow-Origin': '*'
-      // }
-      // apiInstance.post('/api/newimage', JSON.stringify(requestBody), {
-      //   headers: headers
-      // })
-      // .then(res => {
-      //   console.log(res)
-      // })
-      // .catch(err => {
-      //   console.log(err)
-      // })
       var config: any = {
         method: 'post',
         url: 'http://localhost:8080/api/newimage',
@@ -92,6 +80,7 @@ const UploadModal: FC<Props> = ( { url }) => {
       });
     }
     closeModal()
+    updateFunction()
     setImg({
       name: '',
       description: '',

@@ -1,16 +1,17 @@
 import React, { FC } from 'react';
 
 interface ImageProps {
-  id: number
-  name: string
-  url: string
-  description: string
-  tags?: string[]
+    id: string
+    name: string
+    url: string
+    description: string
+    tags?: string[]
 }
+
 
 const Image: FC<ImageProps> = ({id, url, name, description, tags}) => {
   return (
-    <div key={id}>
+    <div key={id} className='singleImageContainer'>
       <div className='imageName'>
         Name: {name}
       </div>

@@ -4,7 +4,12 @@ import { isIndexedAccessTypeNode } from 'typescript'
 import { cloudinaryInstance } from './../axiosConfig'
 import UploadModal from './UploadDetailsModal/UploadModal'
 
-const UploadFile: FC = () => {
+
+interface Props {
+  updateFunction: () => void
+}
+
+const UploadFile: FC<Props> = ({ updateFunction }) => {
   const [selectedImage, setImage] = useState('')
   const [newURL, setURL] = useState('')
 
@@ -39,7 +44,7 @@ const UploadFile: FC = () => {
       <input type='file' onChange={handleChange} />
       {
         newURL !== '' &&
-        <UploadModal url={newURL}/>
+        <UploadModal url={newURL} updateFunction={updateFunction}/>
       }
     </div>
   )
