@@ -10,6 +10,7 @@ interface Props {
   updateFunction: () => void
 }
 
+// something
 const MainImageView: FC<Props> = ({id, name, url, description, tags, updateFunction}) => {
 
   const deleteImage = () => {
@@ -22,10 +23,14 @@ const MainImageView: FC<Props> = ({id, name, url, description, tags, updateFunct
     .catch((err) => {
       console.log(err)
     })
-
   }
 
-  if (id !== '' && name !== '' && url !== '' && tags) {
+  const handleClick = () => {
+    deleteImage()
+    updateFunction()
+  }
+
+  if (id !== '' && name !== '' && url !== '') {
     return (
       <div id='selectedImageContainer'>
         <h2>{name}</h2>
@@ -34,7 +39,7 @@ const MainImageView: FC<Props> = ({id, name, url, description, tags, updateFunct
         <div>
           Tags:
           {
-            tags.map((tag: any) => {
+            tags !== null && tags.map((tag: any) => {
               return (
                 <div>
                   {tag}
@@ -43,7 +48,9 @@ const MainImageView: FC<Props> = ({id, name, url, description, tags, updateFunct
             })
           }
         </div>
-        <button onClick={deleteImage} />
+        <div>
+          <button onClick={handleClick}>Delete Image</button>
+        </div>
       </div>
     )
   }

@@ -13,8 +13,6 @@ const UploadFile: FC<Props> = ({ updateFunction }) => {
   const [selectedImage, setImage] = useState('')
   const [newURL, setURL] = useState('')
 
-
-
   const handleChange = (event: any) => {
     setImage(event.target.files[0])
   }
@@ -42,7 +40,7 @@ const UploadFile: FC<Props> = ({ updateFunction }) => {
   }, [selectedImage])
 
   return (
-    <div className='imageUploadConatainer'>
+    <div className='imageUploadContainer'>
       <input type='file' onChange={handleChange} />
       {
         newURL !== '' &&

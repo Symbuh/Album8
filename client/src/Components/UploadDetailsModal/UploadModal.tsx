@@ -26,7 +26,7 @@ const UploadModal: FC<Props> = ( { url, updateFunction }) => {
     }
   }, [imageObject, tags])
 
-
+  // have to break this into a smaller file
   const openModal = () => {
     setIsOpen(true)
   }
@@ -43,7 +43,7 @@ const UploadModal: FC<Props> = ( { url, updateFunction }) => {
   }
 
   const addTag = () => {
-    let existingTags: any = tags as any
+    const existingTags: any = tags as any
     if (imageObject.tags !== '') {
       if (!existingTags.includes(imageObject.tags)) {
         existingTags.push(imageObject.tags)
@@ -57,12 +57,17 @@ const UploadModal: FC<Props> = ( { url, updateFunction }) => {
     }
   }
 
+  const handleClick = () => {
+    sendToAPI()
+    updateFunction()
+  }
+
   const sendToAPI = () => {
     console.log('calling update function when sending to API')
     if (formComplete) {
       const requestBody: any = imageObject
       requestBody.tags = tags
-      var config: any = {
+      const config: any = {
         method: 'post',
         url: 'http://localhost:8080/api/newimage',
         headers: {
@@ -80,7 +85,7 @@ const UploadModal: FC<Props> = ( { url, updateFunction }) => {
       });
     }
     closeModal()
-    // updateFunction()
+    updateFunction()
     setImg({
       name: '',
       description: '',
@@ -120,7 +125,7 @@ const UploadModal: FC<Props> = ( { url, updateFunction }) => {
         <button onClick={addTag}>Add Tag</button>
         <SelectedTags tags={tags} />
         {
-          formComplete && <button onClick={sendToAPI}>Submit</button>
+          formComplete && <button onClick={handleClick}>Submit</button>
         }
       </Modal>
     </div>
