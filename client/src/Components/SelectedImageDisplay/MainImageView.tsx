@@ -39,7 +39,7 @@ const MainImageView: FC<Props> = ({id, name, url, description, tags, updateFunct
         <div>
           Tags:
           {
-            tags !== null && tags.map((tag: any) => {
+            tags !== null && tags !== undefined && tags.map((tag: any) => {
               return (
                 <div>
                   {tag}

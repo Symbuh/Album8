@@ -20,7 +20,7 @@ const Carousel: FC = () => {
           name: '',
           url: '',
           description: '',
-          tags: ''
+          tags: []
         });
 
   useEffect(() => {
@@ -50,7 +50,7 @@ const Carousel: FC = () => {
 
   const updateFunction = () => {
     getImages()
-    setSelectedImage({id: '', name: '', url: '', description: '', tags: ''})
+    setSelectedImage({id: '', name: '', url: '', description: '', tags: []})
   }
 
   return (
@@ -62,7 +62,7 @@ const Carousel: FC = () => {
         images.map((image: any) => {
           const {id, url, name, description, tags} = image
           return (
-            <div onClick={() => handleClick( id, url, name, description, tags)}>
+            <div onClick={() => handleClick( id, url, name, description, tags )}>
               <Image
                 id={id}
                 url={url}
