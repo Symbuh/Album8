@@ -72,8 +72,7 @@ const Carousel: FC = () => {
       </div>
       <div id="searchByTagToggleContainer">
         <SearchByTagToggle tags={allTags} setImagesByTag={setImages}/>
-      </div>
-      {
+        {
         images.map((image: any) => {
           const {id, url, name, description, tags} = image
           return (
@@ -89,6 +88,7 @@ const Carousel: FC = () => {
           )
         })
       }
+      </div>
       <div>
         <MainImageView
           id={id}
