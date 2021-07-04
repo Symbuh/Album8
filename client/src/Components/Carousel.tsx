@@ -3,12 +3,13 @@ import apiInstance from './../axiosConfig'
 import Image from './Image'
 import MainImageView from './SelectedImageDisplay/MainImageView'
 import UploadFile from './UploadFile'
-
+import SearchByTagToggle from './SearchByTag/SearchByTagToggle'
 
 const Carousel: FC = () => {
 
   const [updateImage, setUpdateImage] = useState(false)
   const [images, setImages]: any[] = useState([]);
+  const [allTags, setAllTags]: any[] = useState([])
   const [{
           id,
           name,
@@ -25,6 +26,7 @@ const Carousel: FC = () => {
 
   useEffect(() => {
     getImages()
+    getTags()
   }, [])
 
   const handleClick = (id: string, url: string, name: string, description: string, tags: any) => {
@@ -38,7 +40,6 @@ const Carousel: FC = () => {
   }
 
   const getImages = () => {
-    console.log('calling get images')
     apiInstance.get('/api/image')
     .then((response: any) => {
       setImages(response.data)
@@ -48,8 +49,19 @@ const Carousel: FC = () => {
     })
   }
 
+  const getTags = () => {
+    apiInstance.get('/api/tags')
+    .then((response: any) => {
+      setAllTags(response.data)
+    })
+    .catch((err: any) => {
+      console.log(err)
+    })
+  }
+
   const updateFunction = () => {
     getImages()
+    getTags()
     setSelectedImage({id: '', name: '', url: '', description: '', tags: []})
   }
 
@@ -57,6 +69,9 @@ const Carousel: FC = () => {
     <div>
       <div>
         <UploadFile updateFunction={updateFunction}/>
+      </div>
+      <div id="searchByTagToggleContainer">
+        <SearchByTagToggle tags={allTags} setImagesByTag={setImages}/>
       </div>
       {
         images.map((image: any) => {
