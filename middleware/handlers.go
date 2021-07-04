@@ -112,10 +112,6 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 		ID:      insertedImageID,
 		Message: "Image saved successfully",
 	}
-	// if r.Method == "OPTIONS" {
-	// 	w.WriteHeader(http.StatusOK)
-	// }
-	// send the response
 	json.NewEncoder(w).Encode(res)
 }
 
@@ -165,6 +161,46 @@ func GetAllImages(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(images)
 }
 
+/*
+	ReWrite this as our search query
+*/
+func GetImageByTag(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	params := mux.Vars(r)
+
+	// tag, err := strconv.Atoi(params["tag"])
+
+	// if err != nil {
+	// 	//log.Fatalf("Unable to convert the string into int.  %v", err)
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
+	images, err := getImagesByTag(params["tag"])
+
+	if err != nil {
+		log.Fatalf("Unable to get all images! %v", err)
+	}
+
+	// send all the users as response
+	json.NewEncoder(w).Encode(images)
+}
+
+func GetTags(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	images, err := getTags()
+
+	if err != nil {
+		log.Fatalf("Unable to get all images! %v", err)
+	}
+
+	// send all the users as response
+	json.NewEncoder(w).Encode(images)
+}
+
 // DeleteUser delete user's detail in the postgres db
 func DeleteImage(w http.ResponseWriter, r *http.Request) {
 
@@ -192,8 +228,14 @@ func DeleteImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	deletedTagRows, err := delete_image_tags(int64(id))
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	// format the message string
-	msg := fmt.Sprintf("User updated successfully. Total rows/record affected %v", deletedRows)
+	msg := fmt.Sprintf("User updated successfully. Total rows/record affected %v", deletedRows+deletedTagRows)
 
 	// format the reponse message
 	res := response{
@@ -244,16 +286,18 @@ func insertImage(image models.Image) (int64, error) {
 	return id, nil
 }
 
-func insertTags(id int64, tags []string) (int64, error) {
+func insertTags(id int64, Tags []string) (int64, error) {
 	db := createConnection()
 
 	defer db.Close()
-	fmt.Print(tags)
+
+	fmt.Print("Tags inside of the query")
+	fmt.Print(Tags)
 	sqlStatement := (`INSERT INTO image_tags (image_id, tags) VALUES ($1, $2) returning image_id`)
 
 	var image_id int64
 
-	err := db.QueryRow(sqlStatement, id, pq.Array(tags)).Scan(&image_id)
+	err := db.QueryRow(sqlStatement, id, pq.Array(Tags)).Scan(&image_id)
 
 	if err != nil {
 		fmt.Printf("Unable to execute the query, failed to insert tags!")
@@ -340,6 +384,90 @@ func getAllImages() ([]models.Image, error) {
 
 	// return empty user on error
 	return images, err
+}
+
+/*
+
+	SELECT images.image_id, images.url, images.name, images.description, image_tags.tags
+	FROM images
+	LEFT OUTER JOIN image_tags ON images.image_id=image_tags.image_id
+	WHERE images.image_id IN (SELECT image_id from image_tags as ids
+	where tags @> ARRAY['code']
+	order by image_id);
+*/
+func getImagesByTag(tag string) ([]models.Image, error) {
+	db := createConnection()
+
+	defer db.Close()
+
+	var images []models.Image
+
+	sqlStatement := `SELECT images.image_id, images.url, images.name, images.description, image_tags.tags
+									FROM images
+									LEFT OUTER JOIN image_tags
+									ON images.image_id=image_tags.image_id
+									WHERE images.image_id
+									IN (SELECT image_id from image_tags as ids
+									WHERE tags @> ARRAY[$1]
+									ORDER BY image_id);`
+
+	rows, err := db.Query(sqlStatement, tag)
+
+	if err != nil {
+		log.Fatalf("Unable to execute query! %v", err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var image models.Image
+
+		err = rows.Scan(&image.ID, &image.URL, &image.Name, &image.Description, pq.Array(&image.Tags))
+
+		if err != nil {
+			log.Fatalf("Unable to scan the row. %v", err)
+		}
+
+		// append the user in the users slice
+		images = append(images, image)
+	}
+
+	return images, err
+}
+
+func getTags() ([]models.Tag, error) {
+
+	db := createConnection()
+
+	defer db.Close()
+
+	var tags []models.Tag
+
+	sqlStatment := `SELECT tag AS tgs
+									FROM image_tags t, unnest(t.tags) AS tag
+									GROUP BY tag;`
+
+	rows, err := db.Query(sqlStatment)
+
+	if err != nil {
+		log.Fatalf("Query failed %v", err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var tag models.Tag
+
+		err = rows.Scan(&tag)
+
+		if err != nil {
+			log.Fatalf("unable to scan the row %v", err)
+
+			tags = append(tags, tag)
+		}
+	}
+
+	return tags, err
 }
 
 // delete user in the DB

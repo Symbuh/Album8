@@ -15,7 +15,9 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/image", middleware.GetAllImages).Methods("GET", "OPTIONS")
 	router.HandleFunc("/api/newimage", middleware.CreateImage).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/deleteimage/{id}", middleware.DeleteImage).Methods("DELETE", "OPTIONS")
-	// router.HandleFunc("/api/getImageBy/{tag}", middleware.GetImageByTag).Methods("GET", "OPTIONS")
+	// router.HandleFunc("/api/tags/, middleware.GetImageByTag).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/tags", middleware.GetTags).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/image/tag/{tag}", middleware.GetImageByTag).Methods("GET", "OPTIONS")
 
 	return router
 }
