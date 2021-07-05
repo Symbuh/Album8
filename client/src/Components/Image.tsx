@@ -15,9 +15,6 @@ const Image: FC<ImageProps> = ({id, url, name, description, tags}) => {
       <div className='imageName'>
         Name: {name}
       </div>
-      <div className='imageContainer'>
-        <img src={url} alt={name}></img>
-      </div>
       <div className='description'>
         Description: {description}
       </div>

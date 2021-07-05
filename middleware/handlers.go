@@ -133,15 +133,12 @@ func GetImage(w http.ResponseWriter, r *http.Request) {
 
 	// call the getUser function with user id to retrieve a single user
 	image, err := getImage(int64(id))
-	fmt.Println("Here is our error: ")
-	fmt.Println(err)
+
 	if err != nil {
-		fmt.Println("We have entered the magical error block in question")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		// json.NewEncoder(w).Encode(err)
 		return
 	}
-	fmt.Println("We are about to send the naughty response back")
 	// send the response
 	json.NewEncoder(w).Encode(image)
 }
@@ -165,8 +162,15 @@ func GetAllImages(w http.ResponseWriter, r *http.Request) {
 	ReWrite this as our search query
 */
 func GetImageByTag(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Context-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers",
+		"Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
 
 	params := mux.Vars(r)
 
@@ -196,7 +200,7 @@ func GetTags(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalf("Unable to get all images! %v", err)
 	}
-
+	fmt.Print(images)
 	// send all the users as response
 	json.NewEncoder(w).Encode(images)
 }
@@ -322,7 +326,6 @@ func getImage(id int64) (models.Image, error) {
 	//var tag models.Tag
 	// create the select sql query
 	sqlStatement := `SELECT images.image_id, images.url, images.name, images.description, image_tags.tags FROM images LEFT OUTER JOIN image_tags ON images.image_id=image_tags.image_id WHERE images.image_id=$1;`
-	// We may have to search by image name here insetead but for now this will work.
 	// execute the sql statement
 	row := db.QueryRow(sqlStatement, id)
 	fmt.Print("row:")
@@ -435,19 +438,21 @@ func getImagesByTag(tag string) ([]models.Image, error) {
 	return images, err
 }
 
-func getTags() ([]models.Tag, error) {
+func getTags() ([]string, error) {
 
 	db := createConnection()
 
 	defer db.Close()
 
-	var tags []models.Tag
+	var tags []string
 
 	sqlStatment := `SELECT tag AS tgs
 									FROM image_tags t, unnest(t.tags) AS tag
 									GROUP BY tag;`
 
 	rows, err := db.Query(sqlStatment)
+
+	fmt.Print(rows)
 
 	if err != nil {
 		log.Fatalf("Query failed %v", err)
@@ -456,15 +461,15 @@ func getTags() ([]models.Tag, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var tag models.Tag
+		var tag string
 
 		err = rows.Scan(&tag)
 
 		if err != nil {
 			log.Fatalf("unable to scan the row %v", err)
-
-			tags = append(tags, tag)
 		}
+
+		tags = append(tags, tag)
 	}
 
 	return tags, err

@@ -44,7 +44,7 @@ const Carousel: FC = () => {
     .then((response: any) => {
       setImages(response.data)
     })
-    .catch((err: any) => {
+     .catch((err: any) => {
       console.log(err);
     })
   }
@@ -52,6 +52,7 @@ const Carousel: FC = () => {
   const getTags = () => {
     apiInstance.get('/api/tags')
     .then((response: any) => {
+      console.log(`tags ${response.data}`)
       setAllTags(response.data)
     })
     .catch((err: any) => {
@@ -65,13 +66,16 @@ const Carousel: FC = () => {
     setSelectedImage({id: '', name: '', url: '', description: '', tags: []})
   }
 
+  const setImagesByTag = (data: any[]) => {
+    setImages(data)
+  }
   return (
-    <div>
-      <div>
+    <div id="mainGridContainer">
+      <div id="uploadFileContainer">
         <UploadFile updateFunction={updateFunction}/>
       </div>
-      <div id="searchByTagToggleContainer">
-        <SearchByTagToggle tags={allTags} setImagesByTag={setImages}/>
+      <div id="filterByTagContainer">
+        <SearchByTagToggle tags={allTags} setImages={setImagesByTag}/>
         {
         images.map((image: any) => {
           const {id, url, name, description, tags} = image
@@ -89,7 +93,7 @@ const Carousel: FC = () => {
         })
       }
       </div>
-      <div>
+      <div id="mainImageViewContainer">
         <MainImageView
           id={id}
           name={name}
