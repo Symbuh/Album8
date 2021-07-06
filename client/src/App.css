@@ -35,7 +35,7 @@
 #mainGridContainer {
   display: grid;
   width: 100%vh;
-  grid-template-rows: 10% 90%;
+  grid-template-rows: 12% 90%;
   grid-template-columns: 30% 70%;
   height: 65rem;
 }
@@ -44,6 +44,10 @@
   max-width: 40rem;
   max-height: 45rem;
   object-fit: cover;
+}
+
+#uploadImageButton {
+  margin-top: .1rem;
 }
 
 #selectedImageContainer {
@@ -126,7 +130,6 @@ input {
   border:0;
   font-family:'Montserrat',sans-serif;
   transition:all .3s;
-  border-bottom:2px solid #d0d0d0;
 }
 
 input:focus {

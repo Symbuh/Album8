@@ -96,7 +96,7 @@ const UploadModal: FC<Props> = ( { url, updateFunction }) => {
 
   return (
     <div>
-      <button onClick={openModal}>Upload Image</button>
+      <button id="uploadImageButton" onClick={openModal}>Upload Image</button>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
