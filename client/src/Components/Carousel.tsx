@@ -4,7 +4,7 @@ import Image from './Image'
 import MainImageView from './SelectedImageDisplay/MainImageView'
 import UploadFile from './UploadFile'
 import SearchByTagToggle from './SearchByTag/SearchByTagToggle'
-
+import axios from 'axios'
 const Carousel: FC = () => {
 
   const [updateImage, setUpdateImage] = useState(false)
@@ -40,7 +40,7 @@ const Carousel: FC = () => {
   }
 
   const getImages = () => {
-    apiInstance.get('/api/image')
+    axios.get('/api/image')
     .then((response: any) => {
       setImages(response.data)
     })

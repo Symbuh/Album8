@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/Symbuh/foundant-technologies-challenge/middleware"
+	"github.com/Symbuh/foundant-technologies-challenge/server/middleware"
 
 	"github.com/gorilla/mux"
 )

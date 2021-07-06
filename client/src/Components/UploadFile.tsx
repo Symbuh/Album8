@@ -1,4 +1,3 @@
-import { time } from 'console'
 import React, {FC, useEffect, useState} from 'react'
 import { isIndexedAccessTypeNode } from 'typescript'
 import { cloudinaryInstance } from './../axiosConfig'

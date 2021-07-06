@@ -1,25 +1,12 @@
 package middleware
 
 import (
-	//"database/sql"
-	// "encoding/json"
-	// "fmt"
-	// "go-postgres/models"
-	// "log"
-	// "net/http"
-	// "os"
-	// "strconv"
-
-	// "github.com/gorilla/mux"
-	// "github.com/joho/godotenv" // package used to read the .env file
-
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/Symbuh/foundant-technologies-challenge/models"
+	"github.com/Symbuh/foundant-technologies-challenge/server/models"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -37,6 +24,7 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers",
 		"Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
 	// Check for preflight options request
 	if r.Method == "OPTIONS" {
 		return
@@ -51,10 +39,6 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	fmt.Print(image.Name)
-	fmt.Print(image.URL)
-	fmt.Print(image.Tags)
 
 	// call insert function to insert an ID
 	insertedImageID, err := insertImage(image)
@@ -71,6 +55,7 @@ func CreateImage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	fmt.Print(insertedTagID)
 
 	res := response{
@@ -114,7 +99,7 @@ func GetAllImages(w http.ResponseWriter, r *http.Request) {
 	images, err := getAllImages()
 
 	if err != nil {
-		log.Fatalf("Unable to get all images! %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
 	json.NewEncoder(w).Encode(images)
@@ -136,7 +121,7 @@ func GetImageByTag(w http.ResponseWriter, r *http.Request) {
 	images, err := getImagesByTag(params["tag"])
 
 	if err != nil {
-		log.Fatalf("Unable to get all images! %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
 	json.NewEncoder(w).Encode(images)
@@ -149,9 +134,8 @@ func GetTags(w http.ResponseWriter, r *http.Request) {
 	images, err := getTags()
 
 	if err != nil {
-		log.Fatalf("Unable to get all images! %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	fmt.Print(images)
 
 	json.NewEncoder(w).Encode(images)
 }

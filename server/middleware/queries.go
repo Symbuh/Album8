@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/Symbuh/foundant-technologies-challenge/models"
+	"github.com/Symbuh/foundant-technologies-challenge/server/models"
 	"github.com/joho/godotenv"
 	"github.com/lib/pq"
 )
@@ -198,8 +198,6 @@ func getTags() ([]string, error) {
 									GROUP BY tag;`
 
 	rows, err := db.Query(sqlStatment)
-
-	fmt.Print(rows)
 
 	if err != nil {
 		return tags, err
