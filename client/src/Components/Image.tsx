@@ -11,7 +11,7 @@ interface ImageProps {
 
 const Image: FC<ImageProps> = ({id, url, name, description, tags}) => {
   return (
-    <div key={id} className='singleImageContainer'>
+    <div key={id} className='listItemContainer'>
       <div className='imageName'>
         Name: {name}
       </div>

@@ -72,26 +72,30 @@ const Carousel: FC = () => {
   return (
     <div id="mainGridContainer">
       <div id="uploadFileContainer">
+        <div className="labelContainer">Upload A File</div>
         <UploadFile updateFunction={updateFunction}/>
       </div>
       <div id="filterByTagContainer">
-        <SearchByTagToggle tags={allTags} setImages={setImagesByTag}/>
-        {
-        images.map((image: any) => {
-          const {id, url, name, description, tags} = image
-          return (
-            <div onClick={() => handleClick( id, url, name, description, tags )}>
-              <Image
-                id={id}
-                url={url}
-                name={name}
-                description={description}
-                tags={tags}
-              />
-            </div>
-          )
-        })
-      }
+        <div className="labelContainer">Images:</div>
+        <SearchByTagToggle tags={allTags} viewAllImages={updateFunction} setImages={setImagesByTag}/>
+        <div id="listContainer">
+          {
+          images.map((image: any) => {
+            const {id, url, name, description, tags} = image
+            return (
+              <div onClick={() => handleClick( id, url, name, description, tags )}>
+                <Image
+                  id={id}
+                  url={url}
+                  name={name}
+                  description={description}
+                  tags={tags}
+                />
+              </div>
+            )
+          })
+          }
+        </div>
       </div>
       <div id="mainImageViewContainer">
         <MainImageView

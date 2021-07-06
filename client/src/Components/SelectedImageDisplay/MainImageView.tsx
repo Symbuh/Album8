@@ -32,11 +32,17 @@ const MainImageView: FC<Props> = ({id, name, url, description, tags, updateFunct
 
   if (id !== '' && name !== '' && url !== '') {
     return (
-      <div id='selectedImageContainer'>
-        <h2>{name}</h2>
-        <img src={url} alt={name}/>
+      <div>
+
+        <div id="mainImageHeaderContainer">
+          <h2 id="mainImageName">{name}</h2>
+          <button onClick={handleClick}>Delete Image</button>
+        </div>
+        <div id='selectedImageContainer'>
+          <img id="mainImage" src={url} alt={name}/>
+        </div>
         <h4>{description}</h4>
-        <div>
+        <div className="tagsContainer">
           Tags:
           {
             tags !== null && tags !== undefined && tags.map((tag: any) => {
@@ -49,7 +55,7 @@ const MainImageView: FC<Props> = ({id, name, url, description, tags, updateFunct
           }
         </div>
         <div>
-          <button onClick={handleClick}>Delete Image</button>
+
         </div>
       </div>
     )
