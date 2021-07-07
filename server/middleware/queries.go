@@ -4,25 +4,29 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/Symbuh/foundant-technologies-challenge/server/models"
-	"github.com/joho/godotenv"
 	"github.com/lib/pq"
 )
 
 func createConnection() *sql.DB {
-	// load .env file
-	err := godotenv.Load(".env")
-
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
 
 	// Open the connection
-	db, err := sql.Open("postgres", os.Getenv("POSTGRES_URL"))
+
+	// use godotenv to load the .env file
+	// err := godotenv.Load(".env")
+
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// Read the POSTGRES_URL from the .env and connect to the db.
+	// db, err := sql.Open("postgres", os.Getenv("POSTGRES_URL"))
+
+	db, err := sql.Open("postgres", "postgres://lputehky:YEyVfD43lSR0IQGCHDr8pnY3UywZs5mz@kashin.db.elephantsql.com/lputehky")
 
 	if err != nil {
+		fmt.Print("Error when opening the database connection")
 		panic(err)
 	}
 
