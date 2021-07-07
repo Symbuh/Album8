@@ -54,6 +54,7 @@ func insertImage(image models.Image) (int64, error) {
 
 	if err != nil {
 		// log.Fatalf("Unable to execute the query. %v", err)
+		fmt.Printf("Unable to execute the query. %v", err)
 		return id, err
 	}
 

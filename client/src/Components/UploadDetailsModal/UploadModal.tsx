@@ -69,7 +69,7 @@ const UploadModal: FC<Props> = ( { url, updateFunction }) => {
       requestBody.tags = tags
       const config: any = {
         method: 'post',
-        url: 'http://localhost:8080/api/newimage',
+        url: 'http://localhost:3000/api/newimage',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -78,7 +78,7 @@ const UploadModal: FC<Props> = ( { url, updateFunction }) => {
 
       axios(config)
       .then(function (response) {
-        console.log(JSON.stringify(response.data));
+        console.log(`response: ${JSON.stringify(response.data)}`);
       })
       .catch(function (error) {
         console.log(error);
