@@ -42,6 +42,7 @@ const MainImageView: FC<Props> = ({id, name, url, description, tags, updateFunct
           <img id="mainImage" src={url} alt={name}/>
         </div>
         <h4>{description}</h4>
+        <a href={url}>Permalink URL</a>
         <div className="tagsContainer">
           Tags:
           {
