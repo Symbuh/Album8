@@ -46,7 +46,7 @@ $ npm start
 
 ### Notes
 
-Front end is loosely typed as this challenge is for a systems-design position.
+Front end is loosely typed and low effort as this challenge is for a systems-design position.
 
 Currently the Postgres database is being hosted by ElephantSQL to speed up development, this may yield a slightly slower experience than running postgres on your local machine through docker.
 
