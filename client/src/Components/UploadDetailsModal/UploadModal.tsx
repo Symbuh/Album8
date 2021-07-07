@@ -102,6 +102,7 @@ const UploadModal: FC<Props> = ( { url, updateFunction }) => {
         onRequestClose={closeModal}
       >
         <h2>Provide Image Details</h2>
+        <h4>Please fill out all fields</h4>
         <input
           type='text'
           placeholder='Photo Name'

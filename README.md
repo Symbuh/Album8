@@ -34,6 +34,24 @@ $ npm start
 
 ---
 
+## Functionality
+
+- Upload any image and save it to the database. along with name description and tags
+- view all images
+- click an image to view individually
+- delete button removes clicked images
+- Filter images by tag through the dropdown
+- click all images to return home
+
+
+### Notes
+
+Front end is loosely typed as this challenge is for a systems-design position.
+
+Currently the Postgres database is being hosted by ElephantSQL to speed up development, this may yield a slightly slower experience than running postgres on your local machine through docker.
+
+---
+
 ## License & Copyright
 
 © Nicholas Sabadicci

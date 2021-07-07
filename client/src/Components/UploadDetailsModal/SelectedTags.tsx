@@ -11,15 +11,13 @@ const SelectedTags: FC<tagProps> = ({ tags }) => {
       <div id='tagsLabelUploadModal'>
         Tags:
       </div>
-      {
-        tags.map((tag) => {
-          return (
-            <div key={tag}>
-              {tag}
-            </div>
-          )
-        })
-      }
+      {tags.map((tag) => {
+        return (
+          <div key={tag}>
+            {tag}
+          </div>
+        )
+      })}
     </div>
   )
 }
