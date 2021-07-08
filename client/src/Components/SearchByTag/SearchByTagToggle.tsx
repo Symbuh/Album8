@@ -25,7 +25,7 @@ const SearchByTagsToggle: FC<Props> = ({ viewAllImages ,setImages, tags }) => {
   const handleChange = (e: any) => {
     axios({
       method: 'get',
-      url: `http://localhost:8080/api/image/tag/${e.target.value}`,
+      url: `http://localhost:3000/api/image/tag/${e.target.value}`,
       headers: { },
       data : ''
     })
