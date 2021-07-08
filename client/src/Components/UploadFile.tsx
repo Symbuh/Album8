@@ -11,6 +11,7 @@ interface Props {
 const UploadFile: FC<Props> = ({ updateFunction }) => {
   const [selectedImage, setImage] = useState('')
   const [newURL, setURL] = useState('')
+  const [inputKey, setInputKey] = useState(Date.now())
 
   const handleChange = (event: any) => {
     setImage(event.target.files[0])
@@ -35,7 +36,8 @@ const UploadFile: FC<Props> = ({ updateFunction }) => {
   }
 
   const resetInput = () => {
-    setImage('')
+    setInputKey(Date.now())
+    setURL('')
   }
 
   useEffect(() => {
@@ -46,7 +48,7 @@ const UploadFile: FC<Props> = ({ updateFunction }) => {
 
   return (
     <div className='imageUploadContainer'>
-      <input type='file' onChange={handleChange} key={selectedImage}/>
+      <input type='file' onChange={handleChange} key={inputKey}/>
       {
         newURL !== '' &&
         <UploadModal url={newURL} updateFunction={updateFunction} resetInput={resetInput}/>

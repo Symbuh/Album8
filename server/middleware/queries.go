@@ -58,8 +58,6 @@ func insertImage(image models.Image) (int64, error) {
 		return id, err
 	}
 
-	fmt.Printf("Inserted a single record %v", id)
-
 	// return the inserted id
 	return id, nil
 }
@@ -82,8 +80,6 @@ func insertTags(id int64, Tags []string) (int64, error) {
 		fmt.Printf("Unable to execute the query, failed to insert tags!")
 		return image_id, err
 	}
-
-	fmt.Printf("Inserted a single record %v", image_id)
 
 	return image_id, nil
 }
