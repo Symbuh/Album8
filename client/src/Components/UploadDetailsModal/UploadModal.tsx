@@ -7,9 +7,10 @@ import SelectedTags from './SelectedTags'
 interface Props {
   url: string,
   updateFunction: () => void
+  resetInput: () => void
 }
 
-const UploadModal: FC<Props> = ( { url, updateFunction }) => {
+const UploadModal: FC<Props> = ( { url, updateFunction, resetInput }) => {
   const [modalIsOpen, setIsOpen] = useState(false)
   const [formComplete, setFormComplete] = useState(false)
   const [imageObject, setImg] = useState({
@@ -60,6 +61,7 @@ const UploadModal: FC<Props> = ( { url, updateFunction }) => {
   const handleClick = () => {
     sendToAPI()
     updateFunction()
+    resetInput()
   }
 
   const sendToAPI = () => {

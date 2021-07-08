@@ -16,6 +16,8 @@ const UploadFile: FC<Props> = ({ updateFunction }) => {
     setImage(event.target.files[0])
   }
 
+
+
   const sendToCloudinary = () => {
     const data = new FormData()
     console.log(selectedImage)
@@ -32,6 +34,10 @@ const UploadFile: FC<Props> = ({ updateFunction }) => {
     })
   }
 
+  const resetInput = () => {
+    setImage('')
+  }
+
   useEffect(() => {
     if (selectedImage !== '') {
       sendToCloudinary()
@@ -40,10 +46,10 @@ const UploadFile: FC<Props> = ({ updateFunction }) => {
 
   return (
     <div className='imageUploadContainer'>
-      <input type='file' onChange={handleChange} />
+      <input type='file' onChange={handleChange} key={selectedImage}/>
       {
         newURL !== '' &&
-        <UploadModal url={newURL} updateFunction={updateFunction}/>
+        <UploadModal url={newURL} updateFunction={updateFunction} resetInput={resetInput}/>
       }
     </div>
   )
